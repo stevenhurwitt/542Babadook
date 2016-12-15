@@ -62,7 +62,7 @@
 \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
 }
 
-\author{\textbf{Steven Hurwitt, Yan Liu, Albert Yu}} % Your name
+\author{\textbf{Albert Yu, Steven Hurwitt, Yan Liu}} % Your name
 
 \date{\normalsize\today} % Today's date or a custom date
 
@@ -289,25 +289,18 @@ MSEs calculated for MCP and SCAD were \(0.656\) and \(0.634\), respectively. Of 
  K-Nearest Neighbors is a relatively simply algorithm that uses all the data to predict a numerical target using a similarity measure, such as a distance function. Using 1 nearest neighbor minimizes the bias but has a large variance. Increasing the number of nearest neighbors, k, introduces more bias, but will reduce the variance. 
 We ran the standard unweighted knn with varying k neighbors considered. The best value we found was \(k=20\), which gave us an MSE of \(0.509\).
 
-\subsection{Ensemble Methods]
+
+\subsection{Random Forests}
 \paragraph{}
-We also looked at bootstrap aggregation (bagging) and boosting to see if they could lower the MSE further than the other models. These methods use multiple learning algorithms to provide better predictive performance compared to any of their parts alone. 
+For random forests, we set number of trees \(ntree = 500\), \(nodesize = 25\), and \(mtry\) as the default value. MSE \(= 0.542\). When we lower the \(nodesize\), we can get better MSE, but it takes longer time for computation.
 
-\subsubsection{Random Forests}
-\paragraph{}
-
-Decision tree learning can use trees for either classification or regression purposes. The trees act as predictive models which map the features of an item to a conclusion about the target value such as our number of blog posts generated within 24 hours. When trees are grown very deep, the models often have low bias but high variance, as they overfit the training set.  Random forest applies the technique of bagging to tree learners to correct the overfitting issue.
-
-\paragraph{}
-For random forest, we set number of trees \(ntree = 500\), \(nodesize = 25\), and \(mtry\) as the default value. MSE \(= 0.542\). When we lower the \(nodesize\), we can get a better MSE, but it takes longer time for computation.
-
-\subsubsection{XGBoost}
+\subsection{XGBoost}
 \paragraph{}
 Finally we decided to use XGBoost, which is a computationally more efficient version of the gradient boosting techniques covered in class. The basic idea of XGBoost is same as boosting. We train a weak learner (tree-based models) to minimize the loss function at each iteration, and add a fraction (\(\eta\)) of this learner to the model.
 \paragraph{}
 Parameter \(\eta\) controls the fraction of the new learner added to the model in each iteration. After parameter tuning, this method resulted in the lowest MSE of 0.390. This is what we chose as the main part of our final model.
 
-
+\subsection{Comparison}
 %%%Other Section
 \paragraph{}
 \begin{table}[ht]
@@ -332,7 +325,12 @@ Lasso & 0.656 & XGBoost & 0.390 \\ [1ex]
 %\end{adjustbox}
 \end{table}
 
-According to the results above, almost all the linear methods and penalized linear methods gave MSE larger than 0.6, and tuning the parameters cannot improve the results a lot.
+\paragraph{}
+According to the results above, almost all the linear methods and penalized linear methods gave MSE larger than 0.6, and tuning the parameters cannot improve the results a lot. Also, penalized linear models cannot effectively select variables. Therefore, linear model is not a good choice for this dataset.
+\paragraph{}
+K-nearest neighbor performed better than linear models. However, it takes too much computational time to tune the parameter \(k\). Also, a cross-validation on the training set easily leads to overfit. Another disadvantage is that the algorithm itself cannot help us to rule out the irrelevant predictors.
+\paragraph{}
+Tree-based models such as random forests and boosting performed better on this dataset. Overfitting is relatively easy to control, and parameter tuning is efficient for XGBoost.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -346,7 +344,7 @@ Penalized linear methods such as Lasso cannot give a satisfactory dimension redu
 \paragraph{}
 Here in order to reduce computational cost, we ramdomly sampled 5000 data points from the original training set and ran a random forests model with \(ntree = 2000\) and \(mtry = 15\). The importance of each variable is shown in the graph below.
 \paragraph{}
-The predictors with the highest importance are attributes 51-62, which are basically information on the number of comments and links received before the basetime
+The predictors with the highest importance are attribute 51-62, which are basically information on the number of comments and links received before the basetime. Most of attributes 1-25 also have high importance, which are the average, standard deviation, maximum and median values of attributes 51-55. However, the minimum values of attributes 51-55 only have weak importance. Also the average and standard deviation of the number of links cannot be neglected. However, parent blog information does not seem to contribute a lot to the prediction.
 
 \begin{figure}[H]
     \centering
@@ -371,11 +369,7 @@ The first 55 principal components explained more than 90\% of the total variance
 
 \subsection{XGBoost on the Refined Data Matrix}
 \paragraph{}
-We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40. XGBoost works as follows:
-
-\paragraph{}
-XGBoost is short for “Extreme Gradient Boosting”. It is based on a tree ensemble model, which is a set of classification and regression trees (CART). In CART, each of the leaves is associated with a real value. Since a single tree is not strong enough alone, a tree ensemble model sums the prediction of multiple trees together. Given K trees, the tree ensemble uses K additive functions to predict the output as follows:
-
+XGBoost is short for "Extreme Gradient Boosting". It is based on a tree ensemble model, which is a set of classification and regression trees (CART). In CART, each of the leaves is associated with a real value. Since a single tree is not strong enough alone, a tree ensemble model sums the prediction of multiple trees together. Given K trees, the tree ensemble uses K additive functions to predict the output as follows:
 
 $$\hat{y}_i = \sum_{k=1}^K f_k (x_i), f_k \in \mathcal{F}, \text{ where } \mathcal{F} \text{ is the set of all possible CARTs}.$$
 \paragraph{}
@@ -389,9 +383,8 @@ Since this model includes functions as parameters, it cannot be optimized using 
 
 $$\mathcal{L}^{(t)} = \sum_{i=1}^n \big(y_i, \hat{y}_i ^{(t-1)} + f_t (x_i)\big) + \Omega(f_t) $$
 
-
-
-
+\paragraph{}
+We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -403,10 +396,21 @@ $$\mathcal{L}^{(t)} = \sum_{i=1}^n \big(y_i, \hat{y}_i ^{(t-1)} + f_t (x_i)\big)
 \section{Discussion and Conclusions}
 
 \paragraph{}
-Based on these results, we can being to rank the algorithms in terms of how well they predicted the number of blog comments for our test data. Linear regression performed the worst, followed by the standard regression penalties, LASSO and ridge regression. The minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SAD) were next and also gave MSE’s in above 0.6. k-nearest neighbor and random forest were better, as they broke 0.6 and got the MSE down to the 0.5 range. However XGBoost ended up being the best model we used according to the given metric, and predicted the test data with an MSE in the 0.3 range. This ended up being our final model for the project.
+Based on these results, we can being to rank the algorithms in terms of how well they predicted the number of blog comments for our test data. Linear regression performed the worst, followed by the standard regression penalties, LASSO and ridge regression. The minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SAD) were next and also gave MSE's in above 0.6. k-nearest neighbor and random forest were better, as they broke 0.6 and got the MSE down to the 0.5 range. However XGBoost ended up being the best model we used according to the given metric, and predicted the test data with an MSE in the 0.3 range. This ended up being our final model for the project.
 
 \paragraph{}
 The main sources of error in learning come from noise, bias, and variance. While the training stage for bagging is parallel, the learner is built sequentially in boosting. Since these methods combine several estimates from different models, they both decrease the variance compared to a single estimate. When the single model runs into issues of over-fitting, bagging methods will usually be a better solution. However, in our case, it seems that the issue was low performance of our single models. Thus, as seen in the MSEs above, boosting methods are superior here since they also try to reduce the bias.
+
+\paragraph{}
+The MSE of the final model is basically the same as the MSE given by XGBoosting with all the predictors. More parameter tuning cannot improve the MSE very much. Therefore, our variable selection and dimension reduction procedure ruled out the irrelevant predictors and kept most signals in the data.
+
+\begin{thebibliography}{1}
+\bibitem{latexcompanion} 
+Chen, Tianqi, and Carlos Guestrin. "Xgboost: A scalable tree boosting system." arXiv preprint arXiv:1603.02754 (2016).
+\end{thebibliography}
+
+
+
 
 
 \end{document}
