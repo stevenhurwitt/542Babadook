@@ -371,8 +371,16 @@ The first 55 principal components explained more than 90\% of the total variance
 
 \subsection{XGBoost on the Refined Data Matrix}
 \paragraph{}
-We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40.
+We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40. XGBoost works as follows:
 
+\paragraph{}
+Given a data set with n obersations and m features, a tree ensemble model uses K additive functions to predict the output. For any given sample, decision rules in the trees are used to assign a value to the leaves and calculate the final prediction using them. To learn the functions used in the model, we minimize the regularized loss function given by:
+
+$$\mathcal{L}(\phi) = \sum_i l(\hat{y}_i, y_i) + \sum_k \Omega( f_k )$$
+$$\text{where } \Omega( f ) = \gamma T + \frac{1}{2} \lambda \| w \|^2.$$
+
+\paragraph{}
+XGBoost is short for ``Extreme Gradient Boosting'' . Gradient boosting is a way to optimize the tree ensemble model. 
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %
