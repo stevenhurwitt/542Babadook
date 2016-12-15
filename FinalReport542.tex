@@ -290,11 +290,20 @@ MSEs calculated for MCP and SCAD were \(0.656\) and \(0.634\), respectively. Of 
 We ran the standard unweighted knn with varying k neighbors considered. The best value we found was \(k=20\), which gave us an MSE of \(0.509\).
 
 
-\subsection{Random Forests}
+\subsection{Ensemble Methods]
 \paragraph{}
-For random forests, we set number of trees \(ntree = 500\), \(nodesize = 25\), and \(mtry\) as the default value. MSE \(= 0.542\). When we lower the \(nodesize\), we can get better MSE, but it takes longer time for computation.
+We also looked at bootstrap aggregation (bagging) and boosting to see if they could lower the MSE further than the other models. These methods use multiple learning algorithms to provide better predictive performance compared to any of their parts alone. 
 
-\subsection{XGBoost}
+\subsubsection{Random Forests}
+\paragraph{}
+
+Decision tree learning can use trees for either classification or regression purposes. The trees act as predictive models which map the features of an item to a conclusion about the target value such as our number of blog posts generated within 24 hours. When trees are grown very deep, the models often have low bias but high variance, as they overfit the training set.  Random forest applies the technique of bagging to tree learners to correct the overfitting issue.
+
+\paragraph{}
+For random forest, we set number of trees \(ntree = 500\), \(nodesize = 25\), and \(mtry\) as the default value. MSE \(= 0.542\). When we lower the \(nodesize\), we can get a better MSE, but it takes longer time for computation.
+
+
+\subsubsection{XGBoost}
 \paragraph{}
 Finally we decided to use XGBoost, which is a computationally more efficient version of the gradient boosting techniques covered in class. The basic idea of XGBoost is same as boosting. We train a weak learner (tree-based models) to minimize the loss function at each iteration, and add a fraction (\(\eta\)) of this learner to the model.
 \paragraph{}
@@ -379,7 +388,7 @@ $$\mathcal{L}(\phi) = \sum_i l(\hat{y}_i, y_i) + \sum_k \Omega( f_k )$$
 $$\text{where } \Omega( f ) = \gamma T + \frac{1}{2} \lambda \| w \|^2.$$
 
 \paragraph{}
-Since this model includes functions as parameters, it cannot be optimized using methods in Euclidean space. Instead, with gradient tree boosting, the model is trained in an additive matter. At the t-th iteration of the i-th instance, this method adds the ft that minimizes the function:
+Since this model includes functions as parameters, it cannot be optimized using methods in Euclidean space. Instead, with gradient tree boosting, the model is trained in an additive matter. At the t-th iteration of the i-th instance, this method adds the $f_t$ that minimizes the function:
 
 $$\mathcal{L}^{(t)} = \sum_{i=1}^n \big(y_i, \hat{y}_i ^{(t-1)} + f_t (x_i)\big) + \Omega(f_t) $$
 
@@ -396,7 +405,7 @@ We combined the 48 predictors with high importance and the first 55 principal co
 \section{Discussion and Conclusions}
 
 \paragraph{}
-Based on these results, we can being to rank the algorithms in terms of how well they predicted the number of blog comments for our test data. Linear regression performed the worst, followed by the standard regression penalties, LASSO and ridge regression. The minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SAD) were next and also gave MSE's in above 0.6. k-nearest neighbor and random forest were better, as they broke 0.6 and got the MSE down to the 0.5 range. However XGBoost ended up being the best model we used according to the given metric, and predicted the test data with an MSE in the 0.3 range. This ended up being our final model for the project.
+Based on these results, we can begin to rank the algorithms in terms of how well they predicted the number of blog comments for our test data. Linear regression performed the worst, followed by the standard regression penalties, LASSO and ridge regression. The minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SAD) were next and also gave MSE's in above 0.6. k-nearest neighbor and random forest were better, as they broke 0.6 and got the MSE down to the 0.5 range. However XGBoost ended up being the best model we used according to the given metric, and predicted the test data with an MSE in the 0.3 range. This ended up being our final model for the project.
 
 \paragraph{}
 The main sources of error in learning come from noise, bias, and variance. While the training stage for bagging is parallel, the learner is built sequentially in boosting. Since these methods combine several estimates from different models, they both decrease the variance compared to a single estimate. When the single model runs into issues of over-fitting, bagging methods will usually be a better solution. However, in our case, it seems that the issue was low performance of our single models. Thus, as seen in the MSEs above, boosting methods are superior here since they also try to reduce the bias.
