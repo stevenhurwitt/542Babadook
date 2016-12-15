@@ -393,6 +393,9 @@ Since this model includes functions as parameters, it cannot be optimized using 
 $$\mathcal{L}^{(t)} = \sum_{i=1}^n \big(y_i, \hat{y}_i ^{(t-1)} + f_t (x_i)\big) + \Omega(f_t) $$
 
 \paragraph{}
+Since it is not practical to enumerate all the possible trees, only one level of the trees is optimized at once. This is done by looking at the loss reduction after any split of a leaf. XGBoost makes splits up to the maximum depth specified and then prunes the tree backwards to remove splits beyond which there is no positive gain. We implemented XGboost from the package \textit{xgboost}. The final model we settled on used a maximum depth of 4.
+
+\paragraph{}
 We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40.
 
 
