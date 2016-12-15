@@ -1,0 +1,385 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[paper=a4, fontsize=11pt]{scrartcl} % A4 paper and 11pt font size
+
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{xfrac}
+\usepackage{graphicx}
+\usepackage{float}
+
+\usepackage{sectsty} % Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape} % Make all sections centered, the default font and small caps
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs - comment this line for an assignment with lots of text
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize 
+\textsc{University of Illinois, Urbana-Champaign} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge Stat 542 Final Report: Using Blog Data to Predict Comments \\ % The assignment title
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{\textbf{Albert Yu, Steven Hurwitt, Yan Liu}} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle % Print the title
+
+\graphicspath{{ /Users/stevenhurwitt/Documents/Illinois/Stat542/FINAL/Pictures }} %set directory for pics
+
+%----------------------------------------------------------------------------------------
+%	Blog Data (Intro)
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+\paragraph{}
+As the traditional modes of media are on the decline, social media has risen to take its place. As the internet is unparalleled in its reach, it has given ordinary people the ability to reach global audiences. One rising vehicle of information on the internet is the weblog, or blog for short. A blog is an online journal or diary which is frequently updated.
+
+\paragraph{}
+Topics for blogs are diverse, ranging from detailing a hobby, providing technical information, or giving personal reflections on the news. Especially in the last few years, blogs are revolutionizing the way information and news is shared. As this form of communication is on the rise, it may be desirable to have a blog that generates traffic, revenue, and popularity. One metric to determine the popularity of a blog could be the number of comments it generates. Therefore, the aim of this project was to predict the number of comments that appear in a blog post - specifically, the number within the upcoming 24 hours.
+
+
+%----------------------------------------------------------------------------------------
+%	Exploratory Data Analysis
+%----------------------------------------------------------------------------------------
+
+\section{Exploratory Data Analysis}
+
+\paragraph{}
+The original dataset contains 280 attributes. Attributes 1-62 are basic features
+such as the number of comments and links in certain time periods prior
+to the basetime. Attribute 63-262 are 0-1 features indicating whether 200 most
+discriminative words appear in the blog posts. Attribute 263-276 are 0-1 features
+indicating the weekday. Attribute 277-280 are features about the parent pages.
+
+\paragraph{}
+We begin by focusing on features in the 1-62 range, as these are generally summary statistics of things related to comments, such as the total comments before the baseline, number of comments one day before the baseline, as well as the number of comments. One thing to note is that a lot of these variables are very ``zero-heavy'' meaning most blogs don't seem to get comments, which could be an issue in making predictions.
+
+\paragraph{}
+The first thing we will look at is the averages for the number of total comments before baseline, comments in day one before baseline and comments in day two before baseline.
+
+\graphicspath{{/Users/stevenhurwitt/Documents/Illinois/Stat542/FINAL/}} %set directory for pics
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{avg2daysbefore.jpg} 
+        \caption{Average Comments on Day 2 Before Baseline}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{avg1daybefore.jpg} 
+        \caption{Average Comments on Day 1 Before Baseline}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{avgbeforepub.jpg} 
+        \caption{Average Comments Before Publication}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{avgafterpub.jpg} 
+        \caption{Average Comments After Publication}
+    \end{minipage}
+\end{figure}
+
+\paragraph{}
+From these plots, we see that the number of comments beforehand all seem to follow a similar pattern in that most blogs have relatively few comments, while some blogs (maybe they're controversial or simply more popular) generate hundreds of comments. The averages are useful to look at, but looking at the medians could also help give us a better idea about how the comments are distributed before the baseline. 
+ 
+ 
+ \begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{med2daysbefore.jpg}
+        \caption{Median Comments on Day 2 Before Baseline}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{med1daybefore.jpg}
+        \caption{Median Comments on Day 1 Before Baseline}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{medbeforepub.jpg} 
+        \caption{Median Comments Before Publication}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{medafterpub.jpg} 
+        \caption{Median Comments After Publication}
+    \end{minipage}
+\end{figure}
+
+\paragraph{}
+ The medians conform to our expectations with this data, and seem to be more centered around zero. Our thinking is that because many blogs may have no comments (and a blog certainly can't have negative comments) that the distribution of comments for all blogs would be skewed to the right, in which case the mean will be greater than the median. However this means that the median will be more robust towards those blogs that have a large number of comments.
+ 
+ \paragraph{}
+ Finally, the standard deviations are another useful statistic to look at in regards to the number of comments on each blog. The graphs are shown below.
+ 
+ 
+ \begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{sd2daysbefore.jpg}
+        \caption{St. Dev. of Comments on Day 2 Before Baseline}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{sd1daybefore.jpg}
+        \caption{Std. Dev. of Comments on Day 1 Before Baseline}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{sdbeforepub.jpg} 
+        \caption{St. Dev. of Comments Before Publication}
+    \end{minipage}\hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.3\textwidth]{sdafterpub.jpg} 
+        \caption{St. Dev. of Comments After Publication}
+    \end{minipage}
+\end{figure}
+ 
+\paragraph{}
+The standard deviations also seem to be clumped around zero, with more of a spread than the averages. This makes sense since they describe the spread of the averages, and should only be zero when the average is constant across all blogs. This means that when they are low the averages don't fluctuate that much, which intuitively seems like it would make the number comments easier to predict if they have less variation.
+
+\paragraph{}
+It will also be useful to look at the correlation between all of the variables. As such, a correlation matrix is shown below.
+
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=1.3\textwidth]{corrmat.jpg} 
+        \caption{Correlation Between Explanatory Variables}
+\end{figure}
+
+This helps us easily identify which the few variables that are pretty strongly negatively correlated with one another, as well as the variables that are positively correlated.
+
+%----------------------------------------------------------------------------------------
+%	Data Cleaning/Transformation
+%----------------------------------------------------------------------------------------
+
+\section{Data Cleaning and Transformation}
+\paragraph{}
+ By using a for loop to go through the data, we found that there were 4 columns whose values were all 0 (including the minimum number of comments between \(T_1\) and \(T_2\), the minimum number of links in the last 24 hours before basetime, and the minimum number of comments that the parents received). Since these columns would not be helpful in prediction, they were removed from the dataset.
+
+\paragraph{}
+ Before training the model, we do the following transformation to the response variable in the raw data.
+\[\tilde{y} = \text{log}(y+1)\]
+
+\paragraph{}
+ For all the methods considered, the prediction accuracy will be evaluated by mean squared error of the log-transformed response.
+\[\text{MSE} = \dfrac{1}{n} \sum_{i=1}^{n} [\text{log} (1+y_i) - \text{log}(\hat{f}(x_i)+1)]^2\]
+
+
+%----------------------------------------------------------------------------------------
+%	Data Analysis
+%----------------------------------------------------------------------------------------
+\section{Data Analysis}
+
+\paragraph{}
+ The following techniques were used for prediction: Multivariate regression, K-nearest neighbor, Ridge regression, Lasso, MCP, SCAD, Random forests, and XGBoost.
+
+\subsection{Multivariate Linear Regression}
+\paragraph{}
+ For multivariate regression, first, we used the lm function to fit a model with
+all of the remaining covariates. One thing to consider is that the residuals with this model are assumed to be multivariate normal. Since this is a strong assumption and the nature of the data does not conform to this assumption, it is not surprising that this model does not perform the best. Still, the MSE was calculated according to the formula provided, and we obtained a value of 0.668, which is a baseline to compare our future results with.
+
+\paragraph{}
+Since there were so many variables, we attempted to come up with a way to
+deal with this issue. Stepwise methods such as forwards and backwards AIC could potentially be used to eliminate non-significant variables. However, due to the large number of variables, this was not feasible so different approaches were tried.
+
+
+\subsection{Penalized Linear Models}
+
+\paragraph{}
+ As the number of predictor variables grows, the traditional stepwise selection methods mentioned above suffer from high variability and low prediction accuracy. Since the aim of the project is to minimize the prediction MSE, we turned next to penalized linear models for higher prediction accuracy as well as computational efficiency.
+
+\paragraph{}
+ One concern in modeling was the correlation between the predictor variables, for example, the correlation of variables 1-50 with variables 51-60. To address this problem, instead of removing variables directly, penalized linear models keep all the predictor variables in the model but constrain the regression coefficients. RSS is minimized using an additional penalty term on the coefficients, which shrinks them. When the shrinkage is large enough, the coefficients will go to zero, effectively giving us another means of variable selection.
+
+\paragraph{}
+ This shrinking of the regression coefficients will introduce bias in the estimation of regression coefficients. We can see this with the first two penalized models: Lasso and Ridge Regression. On the other hand, a benefit of shrinkage is that it provides a decrease in variance. When the increase in bias is significantly less than the decrease in variance, the MSE of the resulting model will improve compared to the multivariate linear regression model.
+
+
+\subsubsection{Lasso}
+\paragraph{}
+ The lasso imposes an \(L^{1}\) penalty on the loss function
+\[\text{argmin}_{\beta} ||\mathbf{y} - \mathbf{X}\mathbf{\beta}|| + \lambda |\beta|\]
+where the shrinkage parameter \(\lambda\) is selected by cross-validation.
+\paragraph{}
+ Over 200 variables have nonzero coefficients in this model. The MSE calculated from Lasso was slightly better than regular regression.
+
+\subsubsection{Ridge Regression}
+\paragraph{}
+ Ridge regression imposes an \(L^2\) penalty on the loss function
+\[\text{argmin}_{\beta} ||\mathbf{y} - \mathbf{X}\mathbf{\beta}|| + \lambda ||\beta||^2\]
+The shrinkage parameter \(\lambda\) is still chosen by cross-validation.
+\par Ridge regression again gave use a slight improvement on the MSE.
+
+\subsubsection{Unbiased Penalties}
+\paragraph{}
+In addition to the biased penalties, we also considered unbiased penalties such as minimax concave penalty (MCP) and SCAD (Smoothly clipped absolute deviation) penalty. MCP selected 56 variables, while SCAD selected 60 variables. With the default parameter settings, the
+MSEs calculated for MCP and SCAD were \(0.656\) and \(0.634\), respectively. Of all 4 of the penalized methods, the unbiased SCAD penalty produced the lowest MSE.
+
+
+\subsection{\(k\)-Nearest Neighbor}
+\paragraph{}
+ K-Nearest Neighbors is a relatively simply algorithm that uses all the data to predict a numerical target using a similarity measure, such as a distance function. Using 1 nearest neighbor minimizes the bias but has a large variance. Increasing the number of nearest neighbors, k, introduces more bias, but will reduce the variance. 
+We ran the standard unweighted knn with varying k neighbors considered. The best value we found was \(k=20\), which gave us an MSE of \(0.509\).
+
+
+\subsection{Random Forests}
+\paragraph{}
+For random forests, we set number of trees \(ntree = 500\), \(nodesize = 25\), and \(mtry\) as the default value. MSE \(= 0.542\). When we lower the \(nodesize\), we can get better MSE, but it takes longer time for computation.
+
+\subsection{XGBoost}
+\paragraph{}
+Finally we decided to use XGBoost, which is a computationally more efficient version of the gradient boosting techniques covered in class. The basic idea of XGBoost is same as boosting. We train a weak learner (tree-based models) to minimize the loss function at each iteration, and add a fraction (\(\eta\)) of this learner to the model.
+\paragraph{}
+Parameter \(\eta\) controls the fraction of the new learner added to the model in each iteration. After parameter tuning, this method resulted in the lowest MSE of 0.390. This is what we chose as the main part of our final model.
+
+
+%%%Other Section
+\paragraph{}
+\begin{table}[ht]
+\caption{Comparison of Model Performance} % title of Table
+\centering % used for centering table
+%\begin{adjustbox}{width=1\textwidth}
+\small
+\begin{tabular}{c c || c c} % centered columns (4 columns)
+
+\hline % inserts single horizontal line
+Method & MSE & Method & MSE\\ [.5ex]
+\hline
+Linear regression & 0.668 & MCP & 0.656\\
+\hline
+\(k\)-nearest neighbor & 0.513 & SCAD & 0.634\\
+\hline
+Ridge regression & 0.643 & Random Forests & 0.542\\
+\hline
+Lasso & 0.656 & XGBoost & 0.390 \\ [1ex]
+\hline %inserts single line
+\end{tabular}
+%\end{adjustbox}
+\end{table}
+
+According to the results above, almost all the linear methods and penalized linear methods gave MSE larger than 0.6, and tuning the parameters cannot improve the results a lot.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%
+%              Final Model
+%
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Final Model}
+\subsection{Importance of Predictors}
+\paragraph{}
+Penalized linear methods such as Lasso cannot give a satisfactory dimension reduction. In order to reduce dimension, we checked the importance of each predictor given by random forests result. 
+\paragraph{}
+Here in order to reduce computational cost, we ramdomly sampled 5000 data points from the original training set and ran a random forests model with \(ntree = 2000\) and \(mtry = 15\). The importance of each variable is shown in the graph below.
+\paragraph{}
+The predictors with the highest importance are attributes 51-62, which are basically information on the number of comments and links received before the basetime
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=0.8\textwidth]{imp.png} 
+        \caption{Importance of the Predictors}
+\end{figure}
+
+\paragraph{}
+Only a small number of predictors are impactful, while most binary predictors for the bag of 200 words do not have strong importance. Therefore, we selected the variables with importance more than 20 into our final model.
+
+\subsection{PCA on the Binary Predictors}
+\paragraph{}
+The binary predictors for the bag of 200 words should provide crucial information in the text. In order to capture these features, we performed PCA on these 200 predictors. The percentage of total variance explained by each principal component is shown in the following graph.
+\paragraph{}
+The first 55 principal components explained more than 90\% of the total variance. Thus, we take the first 55 principal components as refined textual features.
+
+\begin{figure}[H]
+    \centering
+        \includegraphics[width=0.8\textwidth]{pcavar.png} 
+        \caption{Variance Explained}
+\end{figure}
+
+\subsection{XGBoost on the Refined Data Matrix}
+\paragraph{}
+We combined the 48 predictors with high importance and the first 55 principal components of the word matrix, and obtained the refined data matrix. We performed XGBoosting on this refined data matrix and the MSE is 0.40.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%
+%              Discussion and Conclusions
+%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Discussion and Conclusions}
+
+
+
+
+
+
+
+
+\end{document}
