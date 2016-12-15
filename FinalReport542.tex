@@ -375,16 +375,20 @@ We combined the 48 predictors with high importance and the first 55 principal co
 
 \paragraph{}
 XGBoost is short for “Extreme Gradient Boosting”. It is based on a tree ensemble model, which is a set of classification and regression trees (CART). In CART, each of the leaves is associated with a real value. Since a single tree is not strong enough alone, a tree ensemble model sums the prediction of multiple trees together. Given K trees, the tree ensemble uses K additive functions to predict the output as follows:
-<<y hat  curly F CART eqn goes here>
 
+
+$$\hat{y}_i = \sum_{k=1}^K f_k (x_i), f_k \in \mathcal{F}, \text{ where } \mathcal{F} \text{ is the set of all possible CARTs}.$$
+\paragraph{}
 To learn the trees, we will maximize the objective function
 
 $$\mathcal{L}(\phi) = \sum_i l(\hat{y}_i, y_i) + \sum_k \Omega( f_k )$$
 $$\text{where } \Omega( f ) = \gamma T + \frac{1}{2} \lambda \| w \|^2.$$
 
+\paragraph{}
 Since this model includes functions as parameters, it cannot be optimized using methods in Euclidean space. Instead, with gradient tree boosting, the model is trained in an additive matter. At the t-th iteration of the i-th instance, this method adds the ft that minimizes the function:
 
-<Lt goes here>
+$$\mathcal{L}^{(t)} = \sum_{i=1}^n \big(y_i, \hat{y}_i ^{(t-1)} + f_t (x_i)\big) + \Omega(f_t) $$
+
 
 
 
