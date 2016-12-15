@@ -375,6 +375,10 @@ We combined the 48 predictors with high importance and the first 55 principal co
 
 \section{Discussion and Conclusions}
 
+\paragraph{}
+Based on these results, we can being to rank the algorithms in terms of how well they predicted the number of blog comments for our test data. Linear regression performed the worst, followed by the standard regression penalties, LASSO and ridge regression. The minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SAD) were next and also gave MSE’s in above 0.6. k-nearest neighbor and random forest were better, as they broke 0.6 and got the MSE down to the 0.5 range. However XGBoost ended up being the best model we used according to the given metric, and predicted the test data with an MSE in the 0.3 range. This ended up being our final model for the project.
+
+\paragraph{}
 
 
 
